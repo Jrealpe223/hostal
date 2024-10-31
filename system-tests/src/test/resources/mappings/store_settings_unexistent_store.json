@@ -1,0 +1,16 @@
+{
+
+  "request": {
+    "method": "GET",
+    "url": "/v1/settings/product_scraping/1/4"
+  },
+  "response": {
+    "status": 500,
+    "jsonBody": {
+      "message": "mandatory setting product_scraping not set for storeId 4 and countryId 1"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

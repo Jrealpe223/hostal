@@ -1,0 +1,22 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/v1/settings/product_scraping/1/1"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "storeId": 1,
+      "value": "product-scraping-cl-paris",
+      "setting": {
+        "code": "product_scraping",
+        "documentation": "Define la cola del detalle de producto",
+        "optional": false,
+        "dataType": "String"
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

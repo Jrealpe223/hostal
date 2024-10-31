@@ -1,0 +1,268 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+
+        }
+    }
+    dependencies {
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.11.RELEASE"
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.1.1"
+    }
+}
+
+
+plugins {
+
+    //Netflix Nebula Plugins
+    id 'nebula.release' version '17.2.2'
+    id 'nebula.maven-base-publish' version '17.3.2'
+    id "nebula.project" version "9.0.0"
+
+    //Sonarcloud
+    id "org.sonarqube" version "3.1.1"
+
+    //Spring Dependency Management
+    id "io.spring.dependency-management" version "1.0.11.RELEASE"
+    //docker
+    id 'com.bmuschko.docker-remote-api' version "6.7.0"
+    id 'org.springframework.boot' version "${springBootVersion}"
+}
+
+//nebulaRelease {
+//    //Set<String> releaseBranchPatterns = [/main/, /(release(-|\/))?\d+(\.\d+)?\.x/] as Set
+//    //Set<String> releaseBranchPatterns = [/main/, /HEAD/, /(release(-|\/))?\d+(\.\d+)?\.x/, /v?\d+\.\d+\.\d+/] as Set
+//    //addReleaseBranchPattern(releaseBranchPatterns)
+//}
+//
+//tasks.release.finalizedBy tasks.publish
+
+ext {
+    spring_cloud_version = '2022.0.1'
+    spring_boot_version = "${springBootVersion}"
+    lombok_version = '1.18.24'
+    rest_assured_version = '5.3.0'
+}
+
+allprojects {
+
+    group = 'co.com.usc.' + rootProject.name
+
+    apply plugin: "io.spring.dependency-management"
+
+    repositories {
+        mavenCentral()
+    }
+
+    //Centralized Libraries Version
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${spring_cloud_version}"
+            mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+        }
+        dependencies {
+
+            //Basic LOGGIN dependency
+
+
+            //Metrics Configuration for SpringBoot 
+            dependency(group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: spring_boot_version)
+            dependency(group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2', version: spring_boot_version)
+            dependency(group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: spring_boot_version)
+            dependency(group: 'org.springframework.data', name: 'spring-data-jpa', version: '3.0.3')
+            dependency(group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: '1.10.3')
+            dependency(group: 'io.micrometer', name: 'micrometer-core', version: '1.10.3')
+
+            dependency(group: 'org.aspectj', name: 'aspectjweaver', version: '1.9.19')
+
+            dependency group: 'jakarta.annotation', name: 'jakarta.annotation-api', version: '2.1.1'
+
+            dependency group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.0.2'
+
+            dependency group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.14'
+
+
+
+
+            //Testing support
+            dependency(group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: spring_boot_version){
+                exclude group: "org.junit.vintage", name: "junit-vintage-engine"
+            }
+            //Mockito
+            dependency group: 'org.mockito', name: 'mockito-core', version: '5.1.1'
+
+            dependency(group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.3')
+
+            dependency(group: 'com.vladmihalcea', name: 'hibernate-types-60', version: '2.21.1')
+
+
+            // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api
+            dependency group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+            dependency group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+            dependency group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+
+
+            //Lombok
+            dependency group: 'org.projectlombok', name: 'lombok', version: lombok_version
+
+            //Apache Commons
+            dependency group: 'org.apache.commons', name: 'commons-collections4', version: '4.0'
+            dependency group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+
+            //Postgresql Database Dependencies
+            dependency group: 'org.postgresql', name: 'postgresql', version: '42.5.2'
+
+            //Test containers
+            dependency group: 'org.testcontainers', name: 'postgresql', version: '1.17.6'
+
+            dependency group: 'com.zaxxer', name: 'HikariCP', version: '5.0.1'
+
+            //rest-assured
+            dependency group: 'io.rest-assured', name: 'rest-assured', version: rest_assured_version
+            dependency group: 'io.rest-assured', name: 'json-path', version: rest_assured_version
+            dependency group: 'io.rest-assured', name: 'xml-path', version: rest_assured_version
+            dependency group: 'io.rest-assured', name: 'rest-assured-common', version: rest_assured_version
+
+            //mapstruct
+            dependency group: 'org.mapstruct', name: 'mapstruct', version: '1.5.3.Final'
+            dependency group: 'org.mapstruct', name: 'mapstruct-processor', version: '1.5.3.Final'
+
+            // WebSocket
+            dependency(group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: spring_boot_version)
+
+            // Gson
+            dependency(group: 'com.google.code.gson', name: 'gson', version: '2.8.9')
+        }
+
+    }
+}
+
+
+subprojects {
+
+    apply plugin: "jacoco"
+    apply plugin: 'java'
+    apply plugin: 'nebula.maven-base-publish'
+    apply plugin: 'nebula.info'
+    apply plugin: 'java-library'
+
+    sourceCompatibility = 17
+    targetCompatibility = 17
+
+    //Code Coverage Configuration
+    def jacocoExclude = [
+            "com/usc/backend/domain/**",
+            "com/usc/backend/server/**",
+    ]
+
+    jacoco {
+        toolVersion = '0.8.7'
+    }
+    test {
+        useJUnitPlatform()
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.required = true
+            csv.required = false
+            html.outputLocation = file("${buildDir}/jacocoHtml")
+        }
+
+        afterEvaluate {
+            classDirectories.setFrom(files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: jacocoExclude)
+            }))
+        }
+    }
+
+    jacocoTestCoverageVerification {
+        afterEvaluate {
+            classDirectories.setFrom(files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: jacocoExclude)
+            }))
+        }
+
+        violationRules {
+            rule {
+                enabled = true
+                excludes = ['server']
+                limit {
+                    counter = 'INSTRUCTION'
+                    value = 'COVEREDRATIO'
+                    minimum = 0.80
+                }
+            }
+        }
+    }
+
+    //Integration Tests Configuration
+    sourceSets {
+        test {
+            java.srcDirs = ['src/main/java/', 'src/test/java/']
+            compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+            runtimeClasspath += output + compileClasspath
+        }
+    }
+
+    test {
+        useJUnitPlatform {
+            excludeTags 'system-test'
+        }
+        reports {
+            junitXml.required = true
+            html.required = false
+        }
+    }
+
+
+    task integrationTest(type: Test) {
+        useJUnitPlatform {
+            includeTags 'system-test'
+        }
+        reports {
+            junitXml.required = true
+            html.required = false
+        }
+    }
+
+
+    dependencies {
+        implementation group: 'org.apache.commons', name: 'commons-collections4'
+        implementation group: 'org.apache.commons', name: 'commons-lang3'
+        implementation group: 'jakarta.annotation', name: 'jakarta.annotation-api'
+        testImplementation group: 'org.hamcrest', name: 'hamcrest-core', version: '1.3'
+
+        //Adding metrics annotations for all modules
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+        testAnnotationProcessor('org.projectlombok:lombok')
+        testCompileOnly group: 'org.projectlombok', name: 'lombok'
+        testImplementation group: 'org.hamcrest', name: 'hamcrest-core', version: '1.3'
+        testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.8.0'
+        testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+
+        implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
+        implementation group: 'org.springframework.data', name: 'spring-data-jpa'
+
+        testImplementation group: 'org.awaitility', name: 'awaitility', version: '3.0.0'
+
+        testImplementation group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.6.3'
+
+        //mapstruct
+        implementation "org.mapstruct:mapstruct"
+        annotationProcessor "org.mapstruct:mapstruct-processor"
+        testAnnotationProcessor "org.mapstruct:mapstruct-processor"
+
+        // WebSocket
+        implementation group: 'org.springframework.boot', name: 'spring-boot-starter-websocket'
+
+        // Gson
+        implementation group: 'com.google.code.gson', name: 'gson'
+    }
+
+
+
+}
+
+

@@ -1,0 +1,42 @@
+logging:
+    level:
+        root: WARN
+        co.com.usc: DEBUG
+        org.springframework: WARN
+        com.github.tomakehurst.wiremock: DEBUG
+
+    datasource:
+        username: test
+        password: test
+        url: jdbc:postgresql://localhost:5432/usc
+        driver-class-name: "org.postgresql.ds.PGSimpleDataSource"
+        hikari:
+            schema: public
+    jpa:
+        show-sql: true
+        hibernate:
+            ddl-auto: none
+    jackson:
+        serialization:
+            INDENT_OUTPUT: true
+
+feign:
+    client:
+        config:
+            default:
+                connectTimeout: 5000
+                readTimeout: 5000
+                loggerLevel: full
+
+
+service:
+    client:
+        url-validation:
+            name: url-validation
+            url:
+testcontainers:
+    postgresql:
+        version: postgres:15.0
+        database: usc
+        user: test
+        password: test

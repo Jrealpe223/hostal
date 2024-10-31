@@ -1,0 +1,8 @@
+TRUNCATE TABLE product_created_events;
+TRUNCATE TABLE event_type;
+
+INSERT INTO event_type (id, name, created)
+VALUES (100, 'STARTED', CURRENT_TIMESTAMP),
+       (200, 'FAILED', CURRENT_TIMESTAMP),
+       (300, 'RETRYING', CURRENT_TIMESTAMP),
+       (400, 'FINISHED', CURRENT_TIMESTAMP);

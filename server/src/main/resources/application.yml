@@ -1,0 +1,92 @@
+server:
+    port: ${SERVER_PORT:8080}
+#Prometheus Metrics Endpoint
+endpoints:
+    prometheus:
+        sensitive: false
+        id: metrics
+        enabled: true
+
+#Metrics Configuration
+management:
+    endpoint:
+        health:
+            show-details: "ALWAYS"
+    server:
+        port: ${MANAGEMENT_PORT:8081}
+    endpoints:
+        web:
+            base-path: /monitoring
+            exposure:
+                include: info,health,metrics,configprops,prometheus
+            distribution:
+                percentiles-histogram:
+                    ec2: false
+                    load: true
+                percentiles:
+                    ec2: 0.95, 0.99
+                    load: 0.95, 0.99
+                sla:
+                    all:
+                    ec2: 10ms, 100ms
+                    load: 10ms, 100ms
+jwt:
+    secret-key: 218YVi6^uSLrrtLC*5*AyagPJvK1DAtSx69AIYw@vJ9R^5sC$!wBv4v8QulIxESYAIt4gkTAlOB61TLtwr72P5w
+
+spring:
+    autoconfigure:
+        exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+    main:
+        allow-bean-definition-overriding: true
+    datasource:
+        type: com.zaxxer.hikari.HikariDataSource
+        username: ${DB_USERNAME:}
+        password: ${DB_PASSWORD:}
+        jdbc-url: ${DB_JDBC_URL:}
+        connection-timeout: 10000
+        #maximum idle time for connection
+        idle-timeout: 30000
+        # maximum lifetime in milliseconds of a connection in the pool after it is closed.
+        max-lifetime: 60000
+        # maximum size that the pool is allowed to reach, including both idle and in-use connections
+        maximum-pool-size: 50
+        driver-class-name: org.postgresql.Driver
+        connection-test-query: select 1;
+        minimum-idle: 0
+
+    jpa:
+        show-sql: false
+        hibernate:
+            ddl-auto: none
+        properties:
+            jakarta.persistence.sharedCache.mode: NONE
+    jackson:
+        default-property-inclusion: non_null
+        serialization:
+            INDENT_OUTPUT: true
+    application:
+        name: hostalusc
+    cloud:
+        openfeign:
+            client:
+                config:
+                    zoho:
+                        connectTimeout: 60000
+                        readTimeout: 60000
+                        loggerLevel: full
+                        retryer: co.com.usc.hostalusc.repository.config.RetryConfig
+                    crm:
+                        connectTimeout: 60000
+                        readTimeout: 60000
+                        loggerLevel: basic
+
+auth:
+    default-company: ${DEFAULT_COMPANY:}
+
+testcontainers:
+    postgresql:
+        version: postgres:15.0
+        database: usc
+        user: test
+        password: test
+

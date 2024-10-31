@@ -1,0 +1,9 @@
+rootProject.name='hostalusc'
+
+include 'api'
+include 'server'
+include 'domain'
+include 'repository'
+include 'system-tests'
+include 'test-database'
+

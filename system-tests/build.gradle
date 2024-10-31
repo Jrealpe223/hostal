@@ -1,0 +1,23 @@
+
+
+
+
+dependencies {
+    testImplementation 'io.rest-assured:rest-assured' //Must be before any test dependency
+    implementation project(':test-database')
+    implementation project(':server')
+    implementation project(':domain')
+
+    testImplementation group: 'org.hamcrest', name: 'hamcrest-core'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test'){
+        exclude group: 'org.hamcrest'
+    }
+
+    testImplementation('org.springframework.cloud:spring-cloud-starter-contract-stub-runner'){
+        exclude group: 'org.hamcrest'
+    }
+
+
+
+}
