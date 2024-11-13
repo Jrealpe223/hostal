@@ -11,6 +11,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+
 @Table(name = "users", schema = "common")
 @Entity
 @EqualsAndHashCode(of = "id")

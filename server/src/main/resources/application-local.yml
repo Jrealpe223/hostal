@@ -6,9 +6,9 @@ logging:
 spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        username: ${DB_USERNAME:}
-        password: ${DB_PASSWORD:}
-        jdbc-url: ${DB_JDBC_URL:}
+        username: alojamiento
+        password: usc2024*
+        jdbc-url: jdbc:postgresql://0.0.0.0:5432/hostalusc
         hikari:
             connection-timeout: 600000
             #maximum idle time for connection
