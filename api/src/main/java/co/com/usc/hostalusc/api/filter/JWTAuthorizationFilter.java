@@ -7,10 +7,14 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
@@ -68,7 +72,9 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
     }
 
     private Claims validateToken(HttpServletRequest request) {
-        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String jwtToken = request.getHeader(HEADER);
+        System.out.println("Token recibido: " + jwtToken);
+        jwtToken = jwtToken.replace(PREFIX, "");
         return Jwts.parser().setSigningKey(secret.getBytes()).parseClaimsJws(jwtToken).getBody();
     }
 
@@ -78,14 +84,18 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
      * @param claims
      */
     private void setUpSpringAuthentication(Claims claims) {
-        @SuppressWarnings("unchecked")
 
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         String userId = (String) claims.get("userId");
         Boolean isAdmin = (Boolean) claims.get("isAdmin");
+        if(isAdmin){
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(CurrentUserPrincipal.builder()
                 .userId(Objects.nonNull(userId) ? Long.parseLong(userId) : null)
-                .isAdmin(Objects.nonNull(isAdmin) ? isAdmin : null)
-                .build(), null
+                .isAdmin(isAdmin)
+                .build(), null,authorities
                 );
         System.out.println("pasa 12");
         System.out.println(auth);
@@ -94,8 +104,11 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
     private boolean existeJWTToken(HttpServletRequest request, HttpServletResponse res) {
         String authenticationHeader = request.getHeader(HEADER);
-        if (authenticationHeader == null || !authenticationHeader.startsWith(PREFIX))
+        if (authenticationHeader == null || !authenticationHeader.startsWith(PREFIX)){
+            System.out.println("pasa 13");
             return false;
+        }
+        System.out.println("pasa 14");
         return true;
     }
 
