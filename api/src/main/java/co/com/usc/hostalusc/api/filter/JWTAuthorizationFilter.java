@@ -39,30 +39,19 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
             return;
         }
         try {
-            System.out.println("pasa 1");
 
             if (existeJWTToken(request, response)) {
-                System.out.println("pasa 2");
                 Claims claims = validateToken(request);
-                System.out.println("pasa 3");
 
                 if (claims.get("userId") != null) {
-                    System.out.println("pasa 4");
                     setUpSpringAuthentication(claims);
-                    System.out.println("pasa 5");
                 } else {
-                    System.out.println("pasa 6");
                     SecurityContextHolder.clearContext();
-                    System.out.println("pasa 7");
                 }
             } else {
-                System.out.println("pasa 8");
                 SecurityContextHolder.clearContext();
-                System.out.println("pasa 9");
             }
-            System.out.println("pasa 10");
             chain.doFilter(request, response);
-            System.out.println("pasa 11");
         } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException e) {
             System.out.println("erro jwauthoritation filter: " + e.getMessage());
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -97,7 +86,6 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
                 .isAdmin(isAdmin)
                 .build(), null,authorities
                 );
-        System.out.println("pasa 12");
         System.out.println(auth);
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
@@ -105,10 +93,8 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
     private boolean existeJWTToken(HttpServletRequest request, HttpServletResponse res) {
         String authenticationHeader = request.getHeader(HEADER);
         if (authenticationHeader == null || !authenticationHeader.startsWith(PREFIX)){
-            System.out.println("pasa 13");
             return false;
         }
-        System.out.println("pasa 14");
         return true;
     }
 
