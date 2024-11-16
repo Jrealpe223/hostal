@@ -1,11 +1,10 @@
 package co.com.usc.hostalusc.repository.model.common;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import co.com.usc.hostalusc.repository.model.common.types.RoomStatusEnum;
+import co.com.usc.hostalusc.repository.model.common.types.RoomTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
-import java.util.UUID;
 
 
 @Data
@@ -27,8 +26,9 @@ public class Room {
     @Column(name = "room_number", unique = true, nullable = false)
     private String roomNumber;
 
-    @Column(name = "room_type", length = 50)
-    private String roomType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "room_type", length = 50, nullable = false)
+    private RoomTypeEnum roomType;
 
     @Column(name = "price_per_night")
     private Double pricePerNight;
@@ -36,8 +36,7 @@ public class Room {
     @Column(name = "capacity")
     private Integer capacity;
 
-    @Column(name = "status") // e.g., Available, Reserved, Maintenance
-    private String status;
-
-
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 50, nullable = false) // e.g., Available, Reserved, Maintenance
+    private RoomStatusEnum status;
 }

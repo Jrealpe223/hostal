@@ -10,9 +10,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 import java.util.List;
 
 
@@ -87,6 +90,21 @@ public class RoomController {
             return ResponseUtils.buildOutputContractSuccessResponse(updatedRoom, HttpStatus.OK.value());
         } catch (Exception ex) {
             return ResponseUtils.buildOutputContractErrorResponse("Error updateRoom() -> " + ex.getMessage(), MessageCode.INTERVAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+    }
+
+    @Operation(summary = "Get available rooms by date range")
+    @GetMapping(value = "/available-by-dates", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<OutputContract<Object>> getAvailableRoomsByDateRange(
+            @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        log.info("Fetching available rooms between {} and {}", startDate, endDate);
+        try {
+            List<Room> rooms = roomService.getAvailableRoomsByDateRange(startDate, endDate);
+            return ResponseUtils.buildOutputContractSuccessResponse(rooms, HttpStatus.OK.value(), (long) rooms.size());
+        } catch (Exception ex) {
+            return ResponseUtils.buildOutputContractErrorResponse("Error getAvailableRoomsByDateRange() -> " + ex.getMessage(),
+                    MessageCode.INTERVAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 }

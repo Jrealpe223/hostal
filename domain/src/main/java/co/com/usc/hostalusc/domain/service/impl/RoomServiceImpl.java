@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -57,4 +58,16 @@ public class RoomServiceImpl implements RoomsService {
         roomToUpdate.setStatus(room.getStatus());
         return roomRepository.save(roomToUpdate);
     }
+
+    @Override
+    public List<Room> getAvailableRoomsByDateRange(Date startDate, Date endDate) {
+        if (startDate == null || endDate == null) {
+            throw new UscException("Las fechas de inicio y fin son obligatorias");
+        }
+        if (startDate.after(endDate)) {
+            throw new UscException("La fecha de inicio no puede ser posterior a la fecha de fin");
+        }
+        return roomRepository.findAvailableRoomsByDateRange(startDate, endDate);
+    }
+
 }
