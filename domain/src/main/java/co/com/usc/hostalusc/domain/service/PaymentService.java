@@ -11,4 +11,5 @@ public interface PaymentService {
     Payment getPaymentById(Long id);
     Payment createPayment(Payment payment);
     Payment updatePayment(Long id, Payment payment);
+    List<Payment> getPaymentsByMethod(String paymentMethod);
 }

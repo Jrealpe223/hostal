@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.List;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -75,6 +77,22 @@ public class PaymentController {
             return ResponseUtils.buildOutputContractSuccessResponse(updatedPayment, HttpStatus.OK.value());
         } catch (Exception ex) {
             return ResponseUtils.buildOutputContractErrorResponse("Error updatePayment() -> " + ex.getMessage(), MessageCode.INTERVAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+    }
+
+    @Operation(summary = "Get payments by payment method")
+    @GetMapping(value = "/method/{paymentMethod}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<OutputContract<Object>> getPaymentsByMethod(@PathVariable("paymentMethod") String paymentMethod) {
+        log.info("Fetching payments by payment method: {}", paymentMethod);
+        try {
+            List<Payment> payments = paymentService.getPaymentsByMethod(paymentMethod);
+            return ResponseUtils.buildOutputContractSuccessResponse(payments, HttpStatus.OK.value());
+        } catch (Exception ex) {
+            return ResponseUtils.buildOutputContractErrorResponse(
+                    "Error getPaymentsByMethod() -> " + ex.getMessage(),
+                    MessageCode.INTERVAL_SERVER_ERROR,
+                    HttpStatus.INTERNAL_SERVER_ERROR.value()
+            );
         }
     }
 }

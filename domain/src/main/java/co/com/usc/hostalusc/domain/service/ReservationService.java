@@ -11,4 +11,5 @@ public interface ReservationService {
     Reservation getReservationById(Long id);
     Reservation createReservation(Reservation reservation);
     Reservation updateReservation(Long id, Reservation reservation);
+    Reservation getActiveReservationForRoom(Long roomId, java.util.Date date);
 }

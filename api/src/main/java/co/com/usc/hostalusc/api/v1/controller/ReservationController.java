@@ -10,9 +10,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 import java.util.List;
 
 
@@ -87,6 +90,24 @@ public class ReservationController {
             return ResponseUtils.buildOutputContractSuccessResponse(updatedReservation, HttpStatus.OK.value());
         } catch (Exception ex) {
             return ResponseUtils.buildOutputContractErrorResponse("Error updateReservation() -> " + ex.getMessage(), MessageCode.INTERVAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+    }
+
+    @Operation(summary = "Get active reservation for a room on a specific date")
+    @GetMapping(value = "/active/{roomId}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<OutputContract<Object>> getActiveReservationForRoom(
+            @PathVariable("roomId") Long roomId,
+            @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
+        log.info("Fetching active reservation for room ID: {} on date: {}", roomId, date);
+        try {
+            Reservation reservation = reservationService.getActiveReservationForRoom(roomId, date);
+            return ResponseUtils.buildOutputContractSuccessResponse(reservation, HttpStatus.OK.value());
+        } catch (Exception ex) {
+            return ResponseUtils.buildOutputContractErrorResponse(
+                    "Error getActiveReservationForRoom() -> " + ex.getMessage(),
+                    MessageCode.INTERVAL_SERVER_ERROR,
+                    HttpStatus.INTERNAL_SERVER_ERROR.value()
+            );
         }
     }
 }

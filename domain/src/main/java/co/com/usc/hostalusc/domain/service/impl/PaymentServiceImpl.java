@@ -52,4 +52,18 @@ public class PaymentServiceImpl implements PaymentService {
         paymentToUpdate.setPaymentMethod(payment.getPaymentMethod());
         return paymentRepository.save(paymentToUpdate);
     }
+
+    @Override
+    public List<Payment> getPaymentsByMethod(String paymentMethod) {
+        if (paymentMethod == null || paymentMethod.trim().isEmpty()) {
+            throw new UscException("El método de pago no puede estar vacío.");
+        }
+
+        log.info("Fetching payments with payment method: {}", paymentMethod);
+        List<Payment> payments = paymentRepository.findByPaymentMethod(paymentMethod);
+        if (payments.isEmpty()) {
+            throw new UscException("No se encontraron pagos para el método de pago especificado: " + paymentMethod);
+        }
+        return payments;
+    }
 }

@@ -14,5 +14,6 @@ public interface RoomsService {
     Room createRoom(Room room);
     Room updateRoom(Long id, Room room);
     List<Room> getAvailableRoomsByDateRange(Date startDate, Date endDate);
+    Room getRoomByRoomNumber(String roomNumber);
 
 }

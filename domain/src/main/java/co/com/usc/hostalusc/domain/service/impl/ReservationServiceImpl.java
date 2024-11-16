@@ -62,4 +62,11 @@ public class ReservationServiceImpl implements ReservationService {
         }
         return reservationRepository.save(reservationToUpdate);
     }
+
+    @Override
+    public Reservation getActiveReservationForRoom(Long roomId, Date date) {
+        log.info("Fetching active reservation for room ID: {} on date: {}", roomId, date);
+        return reservationRepository.findActiveReservationForRoom(roomId, date)
+                .orElseThrow(() -> new UscException("No active reservation found for room ID: " + roomId + " on date: " + date));
+    }
 }

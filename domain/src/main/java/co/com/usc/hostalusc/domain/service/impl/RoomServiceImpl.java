@@ -70,4 +70,11 @@ public class RoomServiceImpl implements RoomsService {
         return roomRepository.findAvailableRoomsByDateRange(startDate, endDate);
     }
 
+    @Override
+    public Room getRoomByRoomNumber(String roomNumber) {
+        log.info("Fetching room with room number: {}", roomNumber);
+        return roomRepository.findByRoomNumber(roomNumber)
+                .orElseThrow(() -> new UscException("Room with number " + roomNumber + " not found"));
+    }
+
 }

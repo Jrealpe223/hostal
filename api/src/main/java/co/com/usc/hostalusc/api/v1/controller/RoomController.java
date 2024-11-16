@@ -107,4 +107,20 @@ public class RoomController {
                     MessageCode.INTERVAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
+
+    @Operation(summary = "Get room by room number")
+    @GetMapping(value = "/room-number/{roomNumber}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<OutputContract<Object>> getRoomByRoomNumber(@PathVariable("roomNumber") String roomNumber) {
+        log.info("Fetching room with room number: {}", roomNumber);
+        try {
+            Room room = roomService.getRoomByRoomNumber(roomNumber);
+            return ResponseUtils.buildOutputContractSuccessResponse(room, HttpStatus.OK.value());
+        } catch (Exception ex) {
+            return ResponseUtils.buildOutputContractErrorResponse(
+                    "Error getRoomByRoomNumber() -> " + ex.getMessage(),
+                    MessageCode.INTERVAL_SERVER_ERROR,
+                    HttpStatus.INTERNAL_SERVER_ERROR.value()
+            );
+        }
+    }
 }
