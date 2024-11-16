@@ -94,7 +94,7 @@ public class RoomController {
     }
 
     @Operation(summary = "Get available rooms by date range and filters")
-    @GetMapping(value = "/available", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/available/filter", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<OutputContract<Object>> getAvailableRooms(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.util.Date startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.util.Date endDate,
