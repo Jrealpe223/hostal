@@ -96,8 +96,8 @@ public class RoomController {
     @Operation(summary = "Get available rooms by date range and filters")
     @GetMapping(value = "/available/filter", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<OutputContract<Object>> getAvailableRooms(
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.util.Date startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.util.Date endDate,
+            @RequestParam("startDate") @DateTimeFormat(pattern = "dd/MM/yyyy") java.util.Date startDate,
+            @RequestParam("endDate") @DateTimeFormat(pattern = "dd/MM/yyyy") java.util.Date endDate,
             @RequestParam("capacity") Integer capacity,
             @RequestParam("dormitories") Integer dormitories) {
 
