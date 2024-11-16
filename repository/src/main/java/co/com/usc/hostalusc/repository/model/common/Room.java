@@ -36,6 +36,9 @@ public class Room {
     @Column(name = "capacity")
     private Integer capacity;
 
+    @Column(name = "dormitories")
+    private Integer dormitories;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 50, nullable = false) // e.g., Available, Reserved, Maintenance
     private RoomStatusEnum status;

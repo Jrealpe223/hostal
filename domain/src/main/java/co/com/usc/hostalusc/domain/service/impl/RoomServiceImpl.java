@@ -60,14 +60,20 @@ public class RoomServiceImpl implements RoomsService {
     }
 
     @Override
-    public List<Room> getAvailableRoomsByDateRange(Date startDate, Date endDate) {
+    public List<Room> getAvailableRooms(java.util.Date startDate, java.util.Date endDate, Integer capacity, Integer dormitories) {
         if (startDate == null || endDate == null) {
-            throw new UscException("Las fechas de inicio y fin son obligatorias");
+            throw new IllegalArgumentException("Las fechas de inicio y fin no pueden ser nulas.");
         }
-        if (startDate.after(endDate)) {
-            throw new UscException("La fecha de inicio no puede ser posterior a la fecha de fin");
+        if (capacity == null || capacity <= 0) {
+            throw new IllegalArgumentException("La capacidad debe ser mayor que cero.");
         }
-        return roomRepository.findAvailableRoomsByDateRange(startDate, endDate);
+        if (dormitories == null || dormitories <= 0) {
+            throw new IllegalArgumentException("El número de dormitorios debe ser mayor que cero.");
+        }
+
+        log.info("Fetching available rooms with startDate: {}, endDate: {}, capacity: {}, dormitories: {}",
+                startDate, endDate, capacity, dormitories);
+        return roomRepository.findAvailableRoomsByDateRangeAndFilters(startDate, endDate, capacity, dormitories);
     }
 
     @Override

@@ -33,13 +33,21 @@ public interface RoomRepository extends CrudRepository<Room, Long> {
     @Query("""
     SELECT r 
     FROM Room r 
-    WHERE r.status = 'AVAILABLE' AND r.id NOT IN (
-        SELECT res.room.id 
-        FROM Reservation res 
-        WHERE 
-            (res.checkInDate <= :endDate AND res.checkOutDate >= :startDate)
-    )
+    WHERE r.status = 'AVAILABLE' 
+      AND r.capacity >= :capacity 
+      AND r.dormitories >= :dormitories
+      AND r.id NOT IN (
+          SELECT res.room.id 
+          FROM Reservation res 
+          WHERE 
+              (res.checkInDate <= :endDate AND res.checkOutDate >= :startDate)
+      )
     """)
     @Transactional(readOnly = true)
-    List<Room> findAvailableRoomsByDateRange(@Param("startDate") java.util.Date startDate, @Param("endDate") java.util.Date endDate);
+    List<Room> findAvailableRoomsByDateRangeAndFilters(
+            @Param("startDate") java.util.Date startDate,
+            @Param("endDate") java.util.Date endDate,
+            @Param("capacity") Integer capacity,
+            @Param("dormitories") Integer dormitories
+    );
 }

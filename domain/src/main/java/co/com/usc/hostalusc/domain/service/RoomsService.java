@@ -13,7 +13,7 @@ public interface RoomsService {
     Room getRoomById(Long id);
     Room createRoom(Room room);
     Room updateRoom(Long id, Room room);
-    List<Room> getAvailableRoomsByDateRange(Date startDate, Date endDate);
+    List<Room> getAvailableRooms(java.util.Date startDate, java.util.Date endDate, Integer capacity, Integer dormitories);
     Room getRoomByRoomNumber(String roomNumber);
 
 }

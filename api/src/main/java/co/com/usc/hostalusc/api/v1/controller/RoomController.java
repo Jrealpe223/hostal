@@ -93,18 +93,25 @@ public class RoomController {
         }
     }
 
-    @Operation(summary = "Get available rooms by date range")
-    @GetMapping(value = "/available-by-dates", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<OutputContract<Object>> getAvailableRoomsByDateRange(
-            @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-            @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-        log.info("Fetching available rooms between {} and {}", startDate, endDate);
+    @Operation(summary = "Get available rooms by date range and filters")
+    @GetMapping(value = "/available", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<OutputContract<Object>> getAvailableRooms(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.util.Date startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.util.Date endDate,
+            @RequestParam("capacity") Integer capacity,
+            @RequestParam("dormitories") Integer dormitories) {
+
+        log.info("Fetching available rooms with startDate: {}, endDate: {}, capacity: {}, dormitories: {}",
+                startDate, endDate, capacity, dormitories);
         try {
-            List<Room> rooms = roomService.getAvailableRoomsByDateRange(startDate, endDate);
-            return ResponseUtils.buildOutputContractSuccessResponse(rooms, HttpStatus.OK.value(), (long) rooms.size());
+            List<Room> rooms = roomService.getAvailableRooms(startDate, endDate, capacity, dormitories);
+            return ResponseUtils.buildOutputContractSuccessResponse(rooms, HttpStatus.OK.value());
         } catch (Exception ex) {
-            return ResponseUtils.buildOutputContractErrorResponse("Error getAvailableRoomsByDateRange() -> " + ex.getMessage(),
-                    MessageCode.INTERVAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return ResponseUtils.buildOutputContractErrorResponse(
+                    "Error getAvailableRooms() -> " + ex.getMessage(),
+                    MessageCode.INTERVAL_SERVER_ERROR,
+                    HttpStatus.INTERNAL_SERVER_ERROR.value()
+            );
         }
     }
 
